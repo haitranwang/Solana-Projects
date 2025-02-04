@@ -5,6 +5,8 @@ import {
     LAMPORTS_PER_SOL,
     Transaction,
     sendAndConfirmRawTransaction,
+    TransactionInstruction,
+    sendAndConfirmTransaction,
 } from '@solana/web3.js'
 
 import fs from 'mz/fs';
@@ -27,4 +29,33 @@ async function main() {
     const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
     const programKeypair = Keypair.fromSecretKey(secretKey);
     let programId: PublicKey = programKeypair.publicKey;
+
+    // Generate an account (keypair) to transact with our program
+    const triggerKeypair = Keypair.generate();
+    const airdropRequest = await connection.requestAirdrop(
+        triggerKeypair.publicKey,
+        LAMPORTS_PER_SOL,
+    )
+    await connection.confirmTransaction(airdropRequest);
+
+    // Conduct a transaction with our program
+    console.log('--Pinging Program', programId.toBase58());
+    const instruction = new TransactionInstruction({
+        keys: [{pubkey: triggerKeypair.publicKey, isSigner: false, isWritable: true}],
+        programId,
+        data: Buffer.alloc(0),
+    });
+    await sendAndConfirmTransaction(
+        connection,
+        new Transaction().add(instruction),
+        [triggerKeypair],
+    )
 }
+
+main().then(
+    () => process.exit(),
+    err => {
+        console.error(err);
+        process.exit(-1);
+    },
+);
