@@ -1,3 +1,5 @@
 
 /airdrop-project/node_modules
 /node_modules
+/hello-solana/src/program/target
+/hello-solana/node_modules
