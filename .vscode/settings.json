@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "hello-solana/src/program/Cargo.toml",
+        "math-stuff/src/sum/Cargo.toml",
+        "math-stuff/src/square/Cargo.toml",
+        "advanced-math/src/calculator/Cargo.toml",
+    ]
+}
